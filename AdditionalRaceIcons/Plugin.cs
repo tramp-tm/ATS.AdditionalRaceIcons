@@ -36,29 +36,32 @@ namespace AdditionalRaceIcons
         {
             try
             {
-                sprites.Add("Beaver",
-                    TextureHelper.GetImageAsSprite("ats_beaver_f.png", TextureHelper.SpriteType.RaceIcon));
-                sprites.Add("Foxes", TextureHelper.GetImageAsSprite("ats_fox.png", TextureHelper.SpriteType.RaceIcon));
-                sprites.Add("Frog",
-                    TextureHelper.GetImageAsSprite("ats_frog_f.png", TextureHelper.SpriteType.RaceIcon));
-                sprites.Add("Human",
-                    TextureHelper.GetImageAsSprite("ats_human_m.png", TextureHelper.SpriteType.RaceIcon));
-                sprites.Add("Lizard",
-                    TextureHelper.GetImageAsSprite("ats_lizard_f.png", TextureHelper.SpriteType.RaceIcon));
-                sprites.Add("Harpy",
-                    TextureHelper.GetImageAsSprite("sta_harpy_m.png", TextureHelper.SpriteType.RaceIcon));
+                var map = new Dictionary<string, string>
+                {
+                    { "Beaver", "ats_beaver_f.png" },
+                    { "Foxes", "ats_fox.png" },
+                    { "Frog", "ats_frog_f.png" },
+                    { "Human", "ats_human_m.png" },
+                    { "Lizard", "ats_lizard_f.png" },
+                    { "Harpy", "ats_harpy_m.png" },
+                    { "Bat", "ats_bat_m.png" }
+                };
+
+                foreach (var item in map)
+                {
+                    sprites.Add(item.Key, TextureHelper.GetImageAsSprite(item.Value, TextureHelper.SpriteType.RaceIcon));
+                    LogInfo($"sprite {item.Value} is added as '{item.Key}'");
+                }
+                
                 LogInfo($"sprites  ({sprites.Count}) is loaded!");
                 foreach (var entry in sprites)
                 {
                     LogInfo($"sprite:  {entry.Key} {entry.Value.name}");
                 }
-
-                {
-                }
             }
             catch (Exception e)
             {
-                LogInfo($"!!!!!!!!!!!!!");
+                LogInfo($"!!! LoadIcons  exception");
                 Console.WriteLine(e);
                 throw;
             }
@@ -69,17 +72,23 @@ namespace AdditionalRaceIcons
             var raceModelName = villager.raceModel.name;
             var icon = villager.raceModel.roundIcon;
 
-            bool shouldChangeIcon = raceModelName switch
+            // LogInfo($"raceModelName is: {raceModelName}");
+            var shouldChangeIcon = raceModelName switch
             {
-                "Human" or "Harpy" => villager.state.isMale,
+                "Human" or "Harpy" or "Bat" => villager.state.isMale,
                 "Beaver" or "Foxes" or "Frog" or "Lizard" => !villager.state.isMale,
                 _ => false
             };
 
-            if (shouldChangeIcon)
+            Sprite newIcon;
+            if (shouldChangeIcon && sprites.TryGetValue(raceModelName, out newIcon))
             {
-                LogInfo("Changing icon");
-                icon = sprites[raceModelName];
+                // LogInfo("Changing icon");
+                icon = newIcon;
+            }
+            else
+            {
+                // LogInfo("Changing icon, but icon  not found");
             }
 
             return icon;
@@ -89,7 +98,7 @@ namespace AdditionalRaceIcons
         [HarmonyPostfix]
         private static void VillagerPanel_SetUpMainPanel_Postfix(VillagerPanel __instance)
         {
-            LogInfo("SetUpMainPanel_Postfix");
+            // LogInfo("SetUpMainPanel_Postfix");
             __instance.raceIcon.sprite = GetIcon(VillagerPanel.current);
         }
 
@@ -97,7 +106,7 @@ namespace AdditionalRaceIcons
         [HarmonyPostfix]
         private static void HouseResidentButton_SetUpIcon_Postfix(HouseResidentButton __instance)
         {
-            LogInfo("HouseResidentButton_Postfix");
+            // LogInfo("HouseResidentButton_Postfix");
             if (__instance.isLocked)
             {
                 return;
@@ -113,7 +122,7 @@ namespace AdditionalRaceIcons
         [HarmonyPostfix]
         private static void Villager_GetRoundIcon_Postfix(Villager __instance, ref Sprite __result)
         {
-            LogInfo("SetUpMainPanel_Postfix");
+            // LogInfo("SetUpMainPanel_Postfix");
             __result = GetIcon(__instance);
         }
     }

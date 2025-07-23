@@ -1,0 +1,7 @@
+﻿{
+  "name": "AdditionalRaceIcons",
+  "version_number": "1.1.0",
+  "website_url": "https://github.com/tramp-tm/ATS.AdditionalRaceIcons",
+  "description": "A simple mod that changes the villager's icon based on their gender.",
+  "dependencies": ["BepInEx-BepInExPack-5.*", "ATS_API_Devs-API-3.5.0"]
+}
